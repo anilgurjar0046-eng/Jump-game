@@ -1,48 +1,54 @@
+
 <!DOCTYPE html>
 <html>
 <head>
-<title>Jump Game</title>
-<style>
-body { margin:0; overflow:hidden; }
-#player {
-  width:50px;
-  height:50px;
-  background:red;
-  position:absolute;
-  bottom:0;
-  left:50px;
-}
-</style>
+  <title>Jump Game</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+    }
+
+    #player {
+      width: 50px;
+      height: 50px;
+      background: red;
+      position: absolute;
+      bottom: 0;
+      left: 50px;
+    }
+
+    #block {
+      width: 50px;
+      height: 50px;
+      background: black;
+      position: absolute;
+      bottom: 0;
+      right: -50px;
+      animation: move 2s linear infinite;
+    }
+
+    @keyframes move {
+      from { right: -50px; }
+      to { right: 100%; }
+    }
+  </style>
 </head>
+
 <body>
 
 <div id="player"></div>
+<div id="block"></div>
 
 <script>
-let player = document.getElementById("player");
-let jumping = false;
+  let player = document.getElementById("player");
 
-document.addEventListener("click", function(){
-  if(!jumping){
-    jumping = true;
-    let jumpHeight = 0;
-    let up = setInterval(() => {
-      if(jumpHeight >= 150){
-        clearInterval(up);
-        let down = setInterval(() => {
-          if(jumpHeight <= 0){
-            clearInterval(down);
-            jumping = false;
-          }
-          jumpHeight -= 5;
-          player.style.bottom = jumpHeight + "px";
-        }, 20);
-      }
-      jumpHeight += 5;
-      player.style.bottom = jumpHeight + "px";
-    }, 20);
-  }
-});
+  document.addEventListener("click", function() {
+    player.style.bottom = "100px";
+    setTimeout(() => {
+      player.style.bottom = "0";
+    }, 500);
+  });
 </script>
 
 </body>
