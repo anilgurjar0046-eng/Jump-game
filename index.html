@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Doll Jump Game</title>
+  <title>Advanced Road Game</title>
   <style>
     body {
       margin: 0;
       overflow: hidden;
-      background: linear-gradient(skyblue, green);
+      background: #444;
     }
 
     #game {
@@ -15,37 +15,57 @@
       position: relative;
     }
 
-    #doll {
+    #player {
       width: 40px;
-      height: 60px;
-      background: pink;
+      height: 40px;
+      background: yellow;
       position: absolute;
-      bottom: 50px;
-      left: 50px;
-      border-radius: 10px;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
     }
 
-    #ground {
-      width: 100%;
-      height: 50px;
-      background: brown;
+    .car {
+      width: 60px;
+      height: 40px;
       position: absolute;
-      bottom: 0;
+      left: -100px;
+      border-radius: 5px;
     }
 
-    .obstacle {
-      width: 40px;
-      height: 60px;
-      background: black;
-      position: absolute;
-      bottom: 50px;
-      right: -50px;
-      animation: move 3s linear infinite;
+    .lane1 { top: 200px; background: red; animation: move1 3s linear infinite; }
+    .lane2 { top: 300px; background: blue; animation: move2 2s linear infinite; }
+    .lane3 { top: 400px; background: green; animation: move3 1.5s linear infinite; }
+
+    @keyframes move1 {
+      from { left: -100px; }
+      to { left: 100%; }
     }
 
-    @keyframes move {
-      from { right: -50px; }
-      to { right: 100%; }
+    @keyframes move2 {
+      from { left: -100px; }
+      to { left: 100%; }
+    }
+
+    @keyframes move3 {
+      from { left: -100px; }
+      to { left: 100%; }
+    }
+
+    #score {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      color: white;
+      font-size: 20px;
+    }
+
+    #level {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      color: white;
+      font-size: 20px;
     }
   </style>
 </head>
@@ -53,35 +73,61 @@
 <body>
 
 <div id="game">
-  <div id="doll"></div>
-  <div id="ground"></div>
-  <div class="obstacle"></div>
+  <div id="score">Score: 0</div>
+  <div id="level">Level: 1</div>
+
+  <div id="player"></div>
+
+  <div class="car lane1"></div>
+  <div class="car lane2"></div>
+  <div class="car lane3"></div>
 </div>
 
 <script>
-  let doll = document.getElementById("doll");
-  let obstacle = document.querySelector(".obstacle");
+  let player = document.getElementById("player");
+  let cars = document.querySelectorAll(".car");
+  let score = 0;
+  let level = 1;
 
-  document.addEventListener("click", jump);
+  document.addEventListener("click", moveUp);
 
-  function jump() {
-    if (doll.style.bottom != "150px") {
-      doll.style.bottom = "150px";
-      setTimeout(() => {
-        doll.style.bottom = "50px";
-      }, 500);
+  function moveUp() {
+    let currentBottom = parseInt(window.getComputedStyle(player).getPropertyValue("bottom"));
+    player.style.bottom = currentBottom + 50 + "px";
+
+    score++;
+    document.getElementById("score").innerText = "Score: " + score;
+
+    // Level increase
+    if (score % 5 === 0) {
+      level++;
+      document.getElementById("level").innerText = "Level: " + level;
+
+      cars.forEach(car => {
+        let speed = Math.max(1, 3 - level * 0.3);
+        car.style.animationDuration = speed + "s";
+      });
     }
   }
 
   setInterval(() => {
-    let dollBottom = parseInt(window.getComputedStyle(doll).getPropertyValue("bottom"));
-    let obstacleRight = parseInt(window.getComputedStyle(obstacle).getPropertyValue("right"));
+    let playerRect = player.getBoundingClientRect();
 
-    if (obstacleRight > window.innerWidth - 120 && obstacleRight < window.innerWidth - 50 && dollBottom < 100) {
-      alert("Game Over 😢");
-      obstacle.style.animation = "none";
-    }
-  }, 10);
+    cars.forEach(car => {
+      let carRect = car.getBoundingClientRect();
+
+      if (
+        playerRect.left < carRect.right &&
+        playerRect.right > carRect.left &&
+        playerRect.top < carRect.bottom &&
+        playerRect.bottom > carRect.top
+      ) {
+        alert("Game Over 😢 Score: " + score);
+        location.reload();
+      }
+    });
+
+  }, 50);
 </script>
 
 </body>
